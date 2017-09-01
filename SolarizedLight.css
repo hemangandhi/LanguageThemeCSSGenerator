@@ -20,7 +20,7 @@
 
 
 /* Line numbers div */
-.line-numbers{
+.line-numbers-container{
     display: inline-block;
     background-color: #ECE6D3;
     color: #12B4A7;
