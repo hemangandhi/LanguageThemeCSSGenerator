@@ -1,0 +1,72 @@
+/* Contains both a `code-container` & `line-numbers-container` div*/
+.code-frame{
+    font-family: Consolas,"courier new";
+    border-width: 1px;
+    border-color: #073642;
+    border-style: solid;
+    background-color: #373831;
+    margin-left: 20%;
+    margin-right: 20%;
+    overflow: scroll;
+    white-space: nowrap
+}
+
+/* Container that contains all code */
+.code-container{
+    color: #FCFFFC;
+    display: inline-block;
+}
+
+/* Line numbers div */
+.line-numbers-container{
+    display: inline-block;
+    background-color: #373831;
+    color: #FCFFFC;
+    border-style: solid;
+    border-width: 2px;
+    border-right-color: #FCFFFC;
+    border-left-color: #373831;
+    border-top-color: #373831;
+    border-bottom-color: #373831;
+}
+
+/* Language construct keywords (for, switch, break, ... ) */
+.construct-keyword{
+    color: #DE4678;
+}
+
+/* Function names */
+.function{
+    color: #B0DC48;
+}
+
+/* Imports or includes */
+.module{
+    color: #78DFEF;
+}
+
+/* Package or namespace (directory related)*/
+.namespace{
+    color: #DE4678;
+}
+
+/* Comments */
+.comment{
+    font-style: italic;
+    color: #827D6F;
+}
+
+/* Variable types (int, bool, etc */
+.data-type-keyword{
+    color: #EB9F39;
+}
+
+/* Possible primitive values (0 - 9, True, False) */
+.data-type-value{
+    color: #B395F0;
+}
+
+/* String literal */
+.string{
+    color: #EADC86;
+}
