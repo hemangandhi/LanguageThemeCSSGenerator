@@ -9,6 +9,7 @@ pub mod plist_reader {
 
     use self::xml::reader::{EventReader, XmlEvent};
     use self::xml::reader::Error as XMLError;
+    use self::xml::named::OwnedName;
 
     pub enum PList {
         Dictionary(HashMap<String, PList>),
@@ -32,9 +33,28 @@ pub mod plist_reader {
         Done(PList)
     }
 
-    fn fix_plist(accum: PListState, event: XmlEvent) -> PListState {
-        return accum;
-
+    fn fix_plist(accum: PListState, event: XmlEvent) -> Result<PListState, PListError> {
+        return match event {
+            XmlEvent::ProcessingInstruction{..} |
+                XmlEvent::CData(_) |
+                XmlEvent::Whitespace(_) |
+                XmlEvent::Comment(_) |
+                XmlEvent::StartDocument{..} |
+                XmlEvent::EndDocument => Result::Ok(accum),
+            XmlEvent::StartElement{ name, .. } => {
+                let real_name = name.local_name;
+                Result::Ok(accum)
+                // match accum {
+                //     BeforeRoot => if name == "plist" {
+                //             Result::Ok(Root)
+                //         } else {
+                //             Result::Ok(BeforeRoot)
+                //         },
+                //     Root => 
+                // }
+            }
+            _ => Result::Ok(accum),
+        };
     }
 
     pub fn try_read_file(path: String) -> Result<PList, PListError> {
@@ -44,17 +64,15 @@ pub mod plist_reader {
         };
         let reader = EventReader::new(&mut input_file);
 
-        return match reader.into_iter().fold(Result::Ok(PListState::BeforeRoot),
+        return reader.into_iter().fold(Result::Ok(PListState::BeforeRoot),
                                              |state_res, read| {
             state_res.and_then(|state| {
-                read.and_then(|value| Result::Ok(fix_plist(state, value)))
+                read.or_else(|xml_err| Result::Err(PListError::XmlError(xml_err)))
+                    .and_then(|value| fix_plist(state, value))
             })
-        }) {
-            Ok(state) => match state {
-                PListState::Done(val) => Result::Ok(val),
-                _ => Result::Err(PListError::EarlyEOF),
-            },
-            Err(err) => Result::Err(PListError::XmlError(err)),
-        }
+        }).and_then(|result| match result {
+            PListState::Done(value) => Result::Ok(value),
+            _ => Result::Err(PListError::EarlyEOF),
+        })
     }
 }
